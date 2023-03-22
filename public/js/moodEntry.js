@@ -211,13 +211,13 @@ validateBtn.addEventListener("click", (event) => {
 
       if (document.getElementById("moodPage")) {
         postUser.innerHTML = `Your were feeling ${post.moodText}`;
-        postTitle.innerHTML = `\"${post.title}\"`;
+        postTitle.innerHTML = `${post.title}`;
         postMoodsAndDate.innerHTML = ` ${dayjs(post.createdAt).format(
           "MMM DD YYYY, HH:mm"
         )}`;
       } else {
         postUser.innerHTML = "Your drama:";
-        postTitle.innerHTML = `\"${post.title}\"`;
+        postTitle.innerHTML = `${post.title}`;
         postMoodsAndDate.innerHTML = `You felt ${post.moodText} on ${dayjs(
           post.createdAt
         ).format("MMM DD YYYY, HH:mm")}`;

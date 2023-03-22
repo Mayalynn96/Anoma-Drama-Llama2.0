@@ -213,7 +213,7 @@ sumbitBtn.addEventListener("click", (e) => {
         postUser.innerHTML = "Your drama:";
         const postTitle = document.createElement("p");
         postTitle.setAttribute("id", "title");
-        postTitle.innerHTML = `\"${post.title}\"`;
+        postTitle.innerHTML = `${post.title}`;
         const postText = document.createElement("p");
         postText.setAttribute("id", "text");
         postText.innerHTML = post.text;

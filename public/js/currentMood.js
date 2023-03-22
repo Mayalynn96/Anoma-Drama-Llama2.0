@@ -215,7 +215,7 @@ validateBtn.addEventListener("click", (event) => {
 
       const postTitle = document.createElement("p");
       postTitle.setAttribute("id", "title");
-      postTitle.innerHTML = `\"${post.title}\"`;
+      postTitle.innerHTML = `${post.title}`;
       const postMoodsAndDate = document.createElement("p");
       postMoodsAndDate.innerHTML = `Was feeling ${post.moodText} on ${dayjs(
         post.createdAt
