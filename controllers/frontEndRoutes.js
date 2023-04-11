@@ -40,6 +40,8 @@ router.get("/home", (req, res) => {
       allPublicPosts.map((post) => {
         if (post.visibility === "anonymous") {
           post.user["username"] = "Someone's";
+          post.user.llama.llama_image = './images/pixel-llamas/Anoma-llama.png';
+          post.user.llama.llama_hat_image = './images/pixel-llamas/no-hat.png'
         } else {
           if (post.user.username == req.session.userUsername) {
             post.user["username"] = "Your";

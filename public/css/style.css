@@ -1371,25 +1371,25 @@ progress::-webkit-progress-bar {
     width: 90%;
   }
   #sameMood{
-    font-size: 10px;
+    font-size: 2vw;
   }
   #UserPageInfo {
     margin-right: 10px;
   }
   #moodTitle{
-    font-size: 15px;
+    font-size: 2vw;
   }
   #baseSection {
     flex-direction: column;
   }
   #userPageUsername{
-    font-size: 16px;
+    font-size: 3vw;
   }
   #userPageCurrentMood{
-    font-size: 10px;
+    font-size: 2vw;
   }
   #emoji {
-    font-size: 15px;
+    font-size: 4vw;
     right: 5px;
     top: 5px;
   }
@@ -1403,7 +1403,7 @@ progress::-webkit-progress-bar {
   #trackMoodBtn,
   #submit-post,
   header button {
-    font-size: 12px;
+    font-size: 2vw;
     height: 25px;
     width: auto;
     height: auto;
