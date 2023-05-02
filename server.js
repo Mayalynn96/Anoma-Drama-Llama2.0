@@ -1,81 +1,39 @@
-const path = require("path");
 const express = require("express");
-const session = require("express-session");
-const exphbs = require("express-handlebars");
-const Handlebars = require("handlebars");
-const dayjs = require("dayjs");
-const cron = require("node-cron");
-const { Llama } = require("./models");
-
-const allRoutes = require("./controllers");
-const sequelize = require("./config/connection");
-
-const SequelizeStore = require("connect-session-sequelize")(session.Store);
-
 const app = express();
+require("dotenv").config();
+const allRoutes = require("./controllers");
+const cors = require('cors');
+
+//define sequelize connection in /config/connection
+const sequelize = require('./config/connection');
+
+//Set PORT 
 const PORT = process.env.PORT || 3001;
 
-cron.schedule("*/120 * * * *", () => {
-  Llama.findAll().then((llamas) => {
-    llamas.forEach((llama) => {
-      const updatedHappiness =
-        llama.happiness - 1 > 0 ? llama.happiness - 1 : 0;
-      llama.update({ happiness: updatedHappiness });
-    });
-  });
-});
+//build tables when index.js is run
+const {Comment, Llama, Mood, Post, Reaction, User} = require("./models");
 
-const sess = {
-  secret: process.env.SECRET,
-  cookie: {},
-  resave: false,
-  saveUninitialized: true,
-  store: new SequelizeStore({
-    db: sequelize,
-  }),
-};
-
-app.use(session(sess));
-
-const hbs = exphbs.create({});
-app.engine("handlebars", hbs.engine);
-app.set("view engine", "handlebars");
-
+//use express methods to interpret JSON objects
+//middleware to append the response headers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(cors());
+app.options('*', cors());
 
-app.use(allRoutes);
+//references API routes in /controllers for each model
+app.use('/api', allRoutes);
 
-app.get("/sessions", (req, res) => {
-  res.json(req.session);
-});
 
-app.use(function (req, res, next) {
-  res.status(404);
+//wildcard redirect
+app.get("/*", (req, res) => {
+    res.send("Oops we couldn't find what you're looking for!");
+})
 
-  // respond with html page
-  if (req.accepts("html")) {
-    res.render("404", { url: req.url, layout: false });
-    return;
-  }
+//sync sequelize, dropping and recreating the db each time
+//launch server on PORT
+sequelize.sync({ force: false }).then(function () {
+    app.listen(PORT, function () {
+        console.log('App listening on PORT ' + PORT);
 
-  // respond with json
-  if (req.accepts("json")) {
-    res.json({ error: "Not found" });
-    return;
-  }
-
-  // default to plain-text. send()
-  res.type("txt").send("Not found");
-});
-
-Handlebars.registerHelper("dateFormat", function (dateData) {
-  return dayjs(dateData).format("MMM DD YYYY, HH:mm");
-});
-
-sequelize.sync({ force: false }).then(() => {
-  app.listen(PORT, () =>
-    console.log(`Now listening at http://localhost:${PORT}`)
-  );
+    })
 });

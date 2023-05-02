@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexh3422/Anoma_Drama_Llama.git"
+    "url": "git+https://github.com/Mayalynn96/Anoma-Drama-Llama2.0"
   },
   "author": "Alex, Andy, Feliclare, Maya",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alexh3422/Anoma_Drama_Llama/issues"
+    "url": "https://github.com/Mayalynn96/Anoma-Drama-Llama2.0"
   },
-  "homepage": "https://github.com/alexh3422/Anoma_Drama_Llama#readme",
+  "homepage": "https://github.com/Mayalynn96/Anoma-Drama-Llama2.0#readme",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "connect-session-sequelize": "^7.1.5",
@@ -30,6 +30,9 @@
     "node-cron": "^3.0.2",
     "nodemailer": "^6.9.1",
     "require": "^2.4.20",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.0",
+    "path": "^0.12.7",
     "sequelize": "^6.28.0"
   }
 }

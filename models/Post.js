@@ -1,8 +1,8 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../config/connection");
-const Llama = require("./llama");
+const Llama = require("./Llama");
 
-class Posts extends Model {
+class Post extends Model {
   static async afterCreate(post, options) {
     const llama = await Llama.findOne({ where: { userId: post.userId } });
     if (llama) {
@@ -13,7 +13,7 @@ class Posts extends Model {
   }
 }
 
-Posts.init(
+Post.init(
   {
     moodText: {
       type: DataTypes.STRING,
@@ -52,13 +52,10 @@ Posts.init(
 
   {
     sequelize,
-    timestamps: true,
-    freezeTableName: true,
-    modelName: "posts",
     hooks: {
-      afterCreate: Posts.afterCreate,
+      afterCreate: Post.afterCreate,
     },
   }
 );
 
-module.exports = Posts;
+module.exports = Post;

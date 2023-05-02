@@ -1,137 +1,207 @@
 const router = require("express").Router();
-const { Users, Posts, Comments, Mood } = require("../models");
+const { User, Post, Comment, Mood, Llama } = require("../models");
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
 const email = require("../nodemailer");
+const jwt = require("jsonwebtoken");
 
-router.get("/", (req, res) => {
-  Users.findAll({
-    include: [Posts, Comments, Mood],
-  })
-    .then((dbPostData) => res.json(dbPostData))
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
+// Get all users
+router.get("/", async (req, res) => {
+  try {
+    const allUsers = await User.findAll();
+    res.json(allUsers);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error getting all users!" })
+  };
 });
 
-router.get("/logout", (req, res) => {
-  req.session.destroy();
-  res.redirect("/login");
-});
+//GET one all userInfo
+router.get("/currentUserInfo", async (req, res) => {
+  const token = req.headers?.authorization?.split(" ")[1];
+  if (!token) {
+      return res.status(403).json({ msg: "you must be logged in to get current User Info!" });
+  }
+  try {
+      const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+      const results = await User.findByPk(tokenData.id, 
+      //   {
+      //     include:[Post,Comment,Mood,Llama]
+      // }
+      );
 
-router.post("/", (req, res) => {
-  Users.create({
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
-  })
-    .then((dbUserData) => {
-      req.session.userId = dbUserData.id;
-      req.session.userUsername = dbUserData.username;
-      req.session.userEmail = dbUserData.email;
-
-      email(req.body.email, req.body.username);
-      res.json(dbUserData);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
-});
-
-router.get("/currentUser", (req, res) => {
-  Users.findOne({
-    where: {
-      id: req.session.userId,
-    },
-    attributes: { exclude: ["password"] },
-    include: [Posts, Comments],
-  })
-    .then((dbUserData) => {
-      if (!dbUserData) {
-        res.status(404).json({ message: "No user found with this id" });
-        return;
-      }
-      res.json(dbUserData);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
-});
-
-router.get("/:id", (req, res) => {
-  Users.findOne({
-    where: {
-      id: req.params.id,
-    },
-    attributes: { exclude: ["password"] },
-    include: [Posts, Comments],
-  })
-    .then((dbUserData) => {
-      if (!dbUserData) {
-        res.status(404).json({ message: "No user found with this id" });
-        return;
-      }
-      res.json(dbUserData);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
-});
-
-router.post("/login", (req, res) => {
-  Users.findOne({
-    where: {
-      [Op.or]: [{ username: req.body.login }, [{ email: req.body.login }]],
-    },
-  })
-    .then((userData) => {
-      if (!userData) {
-        return res.status(401).json({ msg: "incorrect email or password" });
+      if (results) {
+          return res.json(results);
       } else {
-        if (bcrypt.compareSync(req.body.password, userData.password)) {
-          req.session.userId = userData.id;
-          req.session.userUsername = userData.username;
-          req.session.userEmail = userData.email;
-          return res.json(userData);
-        } else {
-          return res.status(401).json({ msg: "incorrect email or password" });
-        }
+          res.status(404).json({
+              message: "No record exists!"
+          })
       }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ msg: "Try Again!", err });
-    });
-});
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting data - couldn't find user" });
+  }
+})
 
-router.put("/", (req, res) => {
-  Users.update(
-    {
-      currentMood: req.body.currentMood,
-    },
-    {
-      where: { id: req.session.userId },
-    }
-  )
-    .then((data) => {
-      if (data[0]) {
-        req.session.userUserMood = req.body.currentMood;
-        return res.json(data);
-      } else {
-        return res.status(404).json({ msg: "no such record" });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        msg: "an error occurred",
-        err: err,
+// Check if token is valide
+router.get("/isValidToken", (req, res) => {
+  const token = req.headers?.authorization?.split(" ")[1];
+  if (!token) {
+      return res
+          .status(403)
+          .json({ isValid: false, msg: "you must be logged in!" });
+  }
+  try {
+      const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+      res.json({
+          isValid: true,
+          user: tokenData,
       });
-    });
+  } catch (err) {
+      res.status(403).json({
+          isValid: false,
+          msg: "invalid token",
+      });
+  }
 });
+
+router.get("/:id", async (req, res) => {
+  try {
+      const results = await User.findByPk(req.params.id);
+
+      if (results) {
+          return res.json(results);
+      } else {
+          res.status(404).json({
+              message: "No record exists!"
+          })
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error getting data - couldn't find user" });
+  }
+})
+
+//POST a new User
+router.post("/", async (req, res) => {
+
+  try {
+      const newUser = await User.create({
+          username: req.body.username,
+          password: req.body.password,
+          email: req.body.email
+      })
+      const token = jwt.sign(
+          {
+              username: newUser.username,
+              id: newUser.id,
+          },
+          process.env.JWT_SECRET,
+          {
+              expiresIn: "24h",
+          }
+      );
+      email(req.body.email, req.body.username);
+      res.json({
+          token,
+          user: newUser,
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: 'Error creating new user' })
+  }
+})
+
+//DELETE a record
+router.delete("/", async (req, res) => {
+  const token = req.headers?.authorization?.split(" ")[1];
+  if (!token) {
+      return res.status(403).json({ msg: "you must be logged in to delete User!" });
+  }
+  try {
+      const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+      const foundUser = await User.findByPk(tokenData.id)
+
+      if (!foundUser) {
+          return res.status(404).json({ msg: "no such User!" });
+      } else {
+          const results = await User.destroy({
+              where: {
+                  id: tokenData.id
+              }
+          })
+
+          return res.json({msg: "User was deleted!"})
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error deleting User!" });
+  }
+})
+
+//UPDATE a record
+router.put("/", async (req, res) => {
+  const token = req.headers?.authorization?.split(" ")[1];
+  if (!token) {
+      return res.status(403).json({ msg: "you must be logged in to edit User!" });
+  }
+  try {
+      const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+      const foundUser = await User.findByPk(tokenData.id)
+
+      if (!foundUser) {
+          return res.status(404).json({ msg: "no such User!" });
+      } else {
+          const updatedUser = await User.update(req.body, {
+              where: {
+                  id: tokenData.id
+              }
+          })
+
+          return res.json({msg: "User was updated!"})
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error updating user!" });
+  }
+})
+
+
+//POST route for login
+router.post("/login", async (req, res) => {
+  try {
+      const foundUser = await User.findOne({
+          where: {
+              [Op.or]: [{ username: req.body.login }, [{ email: req.body.login }]]
+          }
+      })
+
+      if (!foundUser) {
+          return res.status(401).json({ msg: "Login POST - Incorrect Login" })
+      } else if (!bcrypt.compareSync(req.body.password, foundUser.password)) {
+          return res.status(401).json({ msg: "Login POST - Incorrect Password" })
+      } else {
+          const token = jwt.sign(
+              {
+                  username: foundUser.username,
+                  id: foundUser.id
+              },
+              process.env.JWT_SECRET,
+              {
+                  expiresIn: "24h",
+              }
+          );
+          res.json({
+              token,
+              user: foundUser,
+          });
+      }
+
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ msg: "Error - logging in" });
+  }
+})
+
 
 module.exports = router;

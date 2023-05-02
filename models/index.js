@@ -1,63 +1,62 @@
-const Users = require("./users");
-const Posts = require("./posts");
-const Comments = require("./comments");
-const Mood = require("./mood");
-const Llama = require("./llama");
-const Reaction = require("./reaction");
+const User = require("./User");
+const Post = require("./Post");
+const Comment = require("./Comment");
+const Mood = require("./Mood");
+const Llama = require("./Llama");
+const Reaction = require("./Reaction");
 
-Users.hasMany(Posts, {
+User.hasMany(Post, {
   onDelete: "CASCADE",
   });
-Users.hasMany(Comments);
-Users.hasMany(Mood, {
-  onDelete: "CASCADE",
-}
-  );
-Posts.hasMany(Mood, {
+User.hasMany(Comment);
+User.hasMany(Mood, {
   onDelete: "CASCADE",
 });
-Posts.hasMany(Comments);
-Users.hasMany(Reaction);
-Comments.hasMany(Reaction);
+// Post.hasMany(Mood, {
+//   onDelete: "CASCADE",
+// });
+// Post.hasMany(Comment);
+// User.hasMany(Reaction);
+// Comment.hasMany(Reaction);
 
-Posts.belongsTo(Users, {
-  onDelete: "CASCADE",
-});
+// Post.belongsTo(User, {
+//   onDelete: "CASCADE",
+// });
 
-Comments.belongsTo(Users, {
-  onDelete: "CASCADE",
-});
-
-Comments.belongsTo(Posts, {
+Comment.belongsTo(User, {
   onDelete: "CASCADE",
 });
 
-Comments.belongsTo(Mood, {
+// Comment.belongsTo(Post, {
+//   onDelete: "CASCADE",
+// });
+
+// Comment.belongsTo(Mood, {
+//   onDelete: "CASCADE",
+// });
+
+// Mood.belongsTo(User, {
+//   onDelete: "CASCADE",
+// });
+
+// Mood.belongsTo(Post, {
+//   onDelete: "CASCADE",
+// });
+
+// Reaction.belongsTo(User, {
+//   onDelete: "CASCADE",
+// });
+
+// Reaction.belongsTo(Comment, {
+//   onDelete: "CASCADE",
+// });
+
+// Llama.belongsTo(User, {
+//   onDelete: "CASCADE",
+// });
+
+User.hasOne(Llama, {
   onDelete: "CASCADE",
 });
 
-Mood.belongsTo(Users, {
-  onDelete: "CASCADE",
-});
-
-Mood.belongsTo(Posts, {
-  onDelete: "CASCADE",
-});
-
-Reaction.belongsTo(Users, {
-  onDelete: "CASCADE",
-});
-
-Reaction.belongsTo(Comments, {
-  onDelete: "CASCADE",
-});
-
-Llama.belongsTo(Users, {
-  onDelete: "CASCADE",
-});
-
-Users.hasOne(Llama, {
-  onDelete: "CASCADE",
-});
-
-module.exports = { Users, Posts, Comments, Mood, Llama, Reaction };
+module.exports = { User, Post, Comment, Mood, Llama, Reaction };
