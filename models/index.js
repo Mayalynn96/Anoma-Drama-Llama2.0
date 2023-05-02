@@ -51,9 +51,9 @@ Comment.belongsTo(User, {
 //   onDelete: "CASCADE",
 // });
 
-// Llama.belongsTo(User, {
-//   onDelete: "CASCADE",
-// });
+Llama.belongsTo(User, {
+  onDelete: "CASCADE",
+});
 
 User.hasOne(Llama, {
   onDelete: "CASCADE",

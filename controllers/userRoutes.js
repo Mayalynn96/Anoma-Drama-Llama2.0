@@ -24,11 +24,9 @@ router.get("/currentUserInfo", async (req, res) => {
   }
   try {
       const tokenData = jwt.verify(token, process.env.JWT_SECRET);
-      const results = await User.findByPk(tokenData.id, 
-      //   {
-      //     include:[Post,Comment,Mood,Llama]
-      // }
-      );
+      const results = await User.findByPk(tokenData.id, {
+          include:[Llama]
+      });
 
       if (results) {
           return res.json(results);
