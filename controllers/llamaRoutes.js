@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { Users, Mood, Comments, Reaction, Llama } = require("../models");
 const jwt = require("jsonwebtoken");
 
-// Get all Llamas
+// Get all Llamas DEV MODE
 router.get("/", async (req, res) => {
   try {
     const allLlamas = await Llama.findAll();

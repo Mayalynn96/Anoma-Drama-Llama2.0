@@ -35,9 +35,9 @@ Comment.belongsTo(User, {
 //   onDelete: "CASCADE",
 // });
 
-// Mood.belongsTo(User, {
-//   onDelete: "CASCADE",
-// });
+Mood.belongsTo(User, {
+  onDelete: "CASCADE",
+});
 
 // Mood.belongsTo(Post, {
 //   onDelete: "CASCADE",
