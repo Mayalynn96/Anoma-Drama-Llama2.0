@@ -16,11 +16,11 @@ router.get("/", async (req, res) => {
     };
 });
 
-//GET one all userInfo
+//GET current userInfo
 router.get("/currentUserInfo", async (req, res) => {
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
-        return res.status(403).json({ msg: "you must be logged in to get current User Info!" });
+        return res.status(401).json({ msg: "you must be logged in to get current User Info!" });
     }
     try {
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -46,8 +46,7 @@ router.get("/isValidToken", (req, res) => {
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
         return res
-            .status(403)
-            .json({ isValid: false, msg: "you must be logged in!" });
+            .status(401).json({ isValid: false, msg: "you must be logged in!" });
     }
     try {
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -114,7 +113,7 @@ router.post("/", async (req, res) => {
 router.delete("/", async (req, res) => {
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
-        return res.status(403).json({ msg: "you must be logged in to delete User!" });
+        return res.status(401).json({ msg: "you must be logged in to delete User!" });
     }
     try {
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -141,7 +140,7 @@ router.delete("/", async (req, res) => {
 router.put("/", async (req, res) => {
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
-        return res.status(403).json({ msg: "you must be logged in to edit User!" });
+        return res.status(401).json({ msg: "you must be logged in to edit User!" });
     }
     try {
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -175,9 +174,9 @@ router.post("/login", async (req, res) => {
         })
 
         if (!foundUser) {
-            return res.status(401).json({ msg: "Login POST - Incorrect Login" })
+            return res.status(400).json({ msg: "Login POST - Incorrect Login" })
         } else if (!bcrypt.compareSync(req.body.password, foundUser.password)) {
-            return res.status(401).json({ msg: "Login POST - Incorrect Password" })
+            return res.status(400).json({ msg: "Login POST - Incorrect Password" })
         } else {
             const token = jwt.sign(
                 {

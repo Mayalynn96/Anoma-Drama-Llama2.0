@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
 router.get("/user", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(403).json({ msg: "you must be logged in to see all moods!" });
+    return res.status(401).json({ msg: "you must be logged in to see all moods!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -37,7 +37,7 @@ router.get("/user", async (req, res) => {
 router.post("/", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(403).json({ msg: "You must be logged in to add mood!" });
+    return res.status(401).json({ msg: "You must be logged in to add mood!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -57,7 +57,7 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(403).json({ msg: "You must be logged in to delete mood!" })
+    return res.status(401).json({ msg: "You must be logged in to delete mood!" })
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);

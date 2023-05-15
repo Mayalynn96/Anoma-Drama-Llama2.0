@@ -28,7 +28,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(403).json({ msg: "you must be logged in to add llama!" });
+    return res.status(401).json({ msg: "you must be logged in to add llama!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -52,7 +52,7 @@ router.post("/", async (req, res) => {
 router.put("/", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(403).json({ msg: "you must be logged in to edit llama!" });
+    return res.status(401).json({ msg: "you must be logged in to edit llama!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -77,7 +77,7 @@ router.delete("/", (req, res) => {
   
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(403).json({ msg: "you must be logged in to delete llama!" });
+      return res.status(401).json({ msg: "you must be logged in to delete llama!" });
     }
     try {
       const tokenData = jwt.verify(token, process.env.JWT_SECRET);

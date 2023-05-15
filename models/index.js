@@ -12,16 +12,16 @@ User.hasMany(Comment);
 User.hasMany(Mood, {
   onDelete: "CASCADE",
 });
-// Post.hasMany(Mood, {
-//   onDelete: "CASCADE",
-// });
+Post.hasMany(Mood, {
+  onDelete: "CASCADE",
+});
 // Post.hasMany(Comment);
 // User.hasMany(Reaction);
 // Comment.hasMany(Reaction);
 
-// Post.belongsTo(User, {
-//   onDelete: "CASCADE",
-// });
+Post.belongsTo(User, {
+  onDelete: "CASCADE",
+});
 
 Comment.belongsTo(User, {
   onDelete: "CASCADE",
@@ -39,9 +39,9 @@ Mood.belongsTo(User, {
   onDelete: "CASCADE",
 });
 
-// Mood.belongsTo(Post, {
-//   onDelete: "CASCADE",
-// });
+Mood.belongsTo(Post, {
+  onDelete: "CASCADE",
+});
 
 // Reaction.belongsTo(User, {
 //   onDelete: "CASCADE",
