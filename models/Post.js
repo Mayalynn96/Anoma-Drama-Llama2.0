@@ -6,10 +6,6 @@ class Post extends Model {}
 
 Post.init(
   {
-    moodText: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
     title: {
       type: DataTypes.STRING(50),
       allowNull: false,
