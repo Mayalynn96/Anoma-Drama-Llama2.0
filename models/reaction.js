@@ -8,9 +8,8 @@ Reaction.init(
     reaction: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
+    }
   },
-
   {
     sequelize
   }

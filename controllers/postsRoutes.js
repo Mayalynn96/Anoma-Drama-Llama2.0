@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { User, Post, Comment, Mood, Llama } = require("../models");
+const { User, Post, Reaction, Mood, Llama } = require("../models");
 const jwt = require("jsonwebtoken");
 const { findAll } = require("../models/User");
 
@@ -11,7 +11,8 @@ router.get("/", async (req, res) => {
       where: { visibility: ["public", "anonymous"] },
       include: [
         { model: User, attributes: ["username"], include: [{ model: Llama, attributes: ["llama_image", "llama_hat_image"] }] },
-        { model: Mood, attributes: ["mood"] }
+        { model: Mood, attributes: ["mood"] },
+        { model: Reaction }
       ]
     })
 
@@ -32,17 +33,17 @@ router.get("/", async (req, res) => {
   };
 });
 
-// Get all curretn users posts
+// Get all current users posts
 router.get("/currentUserPosts", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "You must be logged in to add a post!" });
+    return res.status(401).json({ msg: "You must be logged in to see you post!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
 
     const allPosts = await Post.findAll({
-      where: {UserId: tokenData.id},
+      where: { UserId: tokenData.id },
       attributes: ["id", "title", "text", "type", "visibility", "createdAt"],
       include: [
         { model: Mood, attributes: ["mood"] }
@@ -54,7 +55,7 @@ router.get("/currentUserPosts", async (req, res) => {
     }))
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error getting all posts!" })
+    res.status(500).json({ message: "Error getting all current user posts!" })
   };
 });
 
