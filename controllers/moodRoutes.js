@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
 router.get("/user", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "you must be logged in to see all moods!" });
+    return res.status(401).json({ message: "you must be logged in to see all moods!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -37,7 +37,7 @@ router.get("/user", async (req, res) => {
 router.post("/", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "You must be logged in to add mood!" });
+    return res.status(401).json({ message: "You must be logged in to add mood!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -46,7 +46,7 @@ router.post("/", async (req, res) => {
       UserId: tokenData.id,
       PostId: req.body.postId
     })
-    res.json({ msg: "Mood has been added" })
+    res.json({ message: "Mood has been added" })
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error adding mood!" })
@@ -57,13 +57,13 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "You must be logged in to delete mood!" })
+    return res.status(401).json({ message: "You must be logged in to delete mood!" })
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
     const moodToDelete = await Mood.findByPk(req.params.id)
     if(moodToDelete.UserId!=tokenData.id){
-      return res.status(403).json({ msg: "You can only delete your own mood"})
+      return res.status(403).json({ message: "You can only delete your own mood"})
     }
     const deletedMood = await Mood.destroy({
       where: {
@@ -73,7 +73,7 @@ router.delete("/:id", async (req, res) => {
     if (!deletedMood) {
       return res.status(404).json({ message: "No mood found with this id" });
     }
-    return res.json({ msg: "Mood has been deleted!"})
+    return res.json({ message: "Mood has been deleted!"})
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error deleting mood!" })

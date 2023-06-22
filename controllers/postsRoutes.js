@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
 router.get("/currentUserPosts", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "You must be logged in to see you post!" });
+    return res.status(401).json({ message: "You must be logged in to see you post!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -63,7 +63,7 @@ router.get("/currentUserPosts", async (req, res) => {
 router.post("/", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "You must be logged in to add a post!" });
+    return res.status(401).json({ message: "You must be logged in to add a post!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -95,18 +95,18 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "You must be logged in to modify a post!" });
+    return res.status(401).json({ message: "You must be logged in to modify a post!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
     const postToEdit = await Post.findByPk(req.params.id)
 
     if (!postToEdit) {
-      return res.status(404).json({ msg: "No post found with this id" });
+      return res.status(404).json({ message: "No post found with this id" });
     }
 
     if (tokenData.id != postToEdit.UserId) {
-      return res.status(403).json({ msg: "You can only modify your own post" })
+      return res.status(403).json({ message: "You can only modify your own post" })
     }
 
     const oldMoods = await Mood.findAll({ where: { PostId: req.params.id } })
@@ -142,7 +142,7 @@ router.put("/:id", async (req, res) => {
       }
     })
 
-    return res.json({ msg: "Post and moods have been edited." })
+    return res.json({ message: "Post and moods have been edited." })
 
   } catch (error) {
     console.error(error);
@@ -153,18 +153,18 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "You must be logged in to deleting a post!" });
+    return res.status(401).json({ message: "You must be logged in to deleting a post!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
     const postToDelete = await Post.findByPk(req.params.id)
 
     if (!postToDelete) {
-      return res.status(404).json({ msg: "No post found with this id" });
+      return res.status(404).json({ message: "No post found with this id" });
     }
 
     if (tokenData.id != postToDelete.UserId) {
-      return res.status(403).json({ msg: "You can only delete your own post" })
+      return res.status(403).json({ message: "You can only delete your own post" })
     } else {
       postToDelete.destroy()
     }
@@ -175,7 +175,7 @@ router.delete("/:id", async (req, res) => {
       }
     })
 
-    return res.json({ msg: "Post and associated moods have been removed." })
+    return res.json({ message: "Post and associated moods have been removed." })
 
   } catch (error) {
     console.error(error);

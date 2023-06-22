@@ -10,9 +10,6 @@ router.use("/posts", postsRoutes);
 const MoodRoutes = require("./moodRoutes");
 router.use("/moods", MoodRoutes);
 
-// const frontEndRoutes = require("./frontEndRoutes");
-// router.use("/", frontEndRoutes);
-
 const llamaRoutes = require("./llamaRoutes");
 router.use("/llamas", llamaRoutes);
 

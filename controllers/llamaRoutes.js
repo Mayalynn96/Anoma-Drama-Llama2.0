@@ -21,14 +21,14 @@ router.get("/", async (req, res) => {
 //     .then((dbPostData) => res.json(dbPostData))
 //     .catch((err) => {
 //       console.log(err);
-//       res.status(500).json({ msg: "error occured", err });
+//       res.status(500).json({ message: "error occured", err });
 //     });
 // });
 
 router.post("/", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "you must be logged in to add llama!" });
+    return res.status(401).json({ message: "you must be logged in to add llama!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -52,7 +52,7 @@ router.post("/", async (req, res) => {
 router.put("/", async (req, res) => {
   const token = req.headers?.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ msg: "you must be logged in to edit llama!" });
+    return res.status(401).json({ message: "you must be logged in to edit llama!" });
   }
   try {
     const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -65,7 +65,7 @@ router.put("/", async (req, res) => {
       return res.status(404).json({message: "this user has no Llama"})
     }
 
-    return res.json({msg: "Llama was updated!"})
+    return res.json({message: "Llama was updated!"})
 
   } catch (error) {
     console.error(error);
@@ -77,7 +77,7 @@ router.delete("/", (req, res) => {
   
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ msg: "you must be logged in to delete llama!" });
+      return res.status(401).json({ message: "you must be logged in to delete llama!" });
     }
     try {
       const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -92,7 +92,7 @@ router.delete("/", (req, res) => {
         return res.status(404).json({message: "this user has no Llama"})
       }
   
-      return res.json({msg: "Llama was deleted!"})
+      return res.json({message: "Llama was deleted!"})
   
     } catch (error) {
       console.error(error);
@@ -108,7 +108,7 @@ router.delete("/", (req, res) => {
 //     .then((dbPostData) => res.json(dbPostData))
 //     .catch((err) => {
 //       console.log(err);
-//       res.status(500).json({ msg: "error occured", err });
+//       res.status(500).json({ message: "error occured", err });
 //     });
 // });
 

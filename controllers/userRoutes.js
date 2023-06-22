@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
 router.get("/currentUserInfo", async (req, res) => {
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
-        return res.status(401).json({ msg: "you must be logged in to get current User Info!" });
+        return res.status(401).json({ message: "you must be logged in to get current User Info!" });
     }
     try {
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -46,7 +46,7 @@ router.get("/isValidToken", (req, res) => {
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
         return res
-            .status(401).json({ isValid: false, msg: "you must be logged in!" });
+            .status(401).json({ isValid: false, message: "you must be logged in!" });
     }
     try {
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
@@ -57,7 +57,7 @@ router.get("/isValidToken", (req, res) => {
     } catch (err) {
         res.status(403).json({
             isValid: false,
-            msg: "invalid token",
+            message: "invalid token",
         });
     }
 });
@@ -105,7 +105,7 @@ router.post("/", async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ msg: 'Error creating new user' })
+        res.status(500).json({ message: 'Error creating new user' })
     }
 })
 
@@ -113,14 +113,14 @@ router.post("/", async (req, res) => {
 router.delete("/", async (req, res) => {
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
-        return res.status(401).json({ msg: "you must be logged in to delete User!" });
+        return res.status(401).json({ message: "you must be logged in to delete User!" });
     }
     try {
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         const foundUser = await User.findByPk(tokenData.id)
 
         if (!foundUser) {
-            return res.status(404).json({ msg: "no such User!" });
+            return res.status(404).json({ message: "no such User!" });
         } else {
             const results = await User.destroy({
                 where: {
@@ -128,7 +128,7 @@ router.delete("/", async (req, res) => {
                 }
             })
 
-            return res.json({ msg: "User was deleted!" })
+            return res.json({ message: "User was deleted!" })
         }
     } catch (error) {
         console.error(error);
@@ -140,14 +140,14 @@ router.delete("/", async (req, res) => {
 router.put("/", async (req, res) => {
     const token = req.headers?.authorization?.split(" ")[1];
     if (!token) {
-        return res.status(401).json({ msg: "you must be logged in to edit User!" });
+        return res.status(401).json({ message: "you must be logged in to edit User!" });
     }
     try {
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         const foundUser = await User.findByPk(tokenData.id)
 
         if (!foundUser) {
-            return res.status(404).json({ msg: "no such User!" });
+            return res.status(404).json({ message: "no such User!" });
         } else {
             const updatedUser = await User.update(req.body, {
                 where: {
@@ -155,7 +155,7 @@ router.put("/", async (req, res) => {
                 }
             })
 
-            return res.json({ msg: "User was updated!" })
+            return res.json({ message: "User was updated!" })
         }
     } catch (error) {
         console.error(error);
@@ -174,9 +174,9 @@ router.post("/login", async (req, res) => {
         })
 
         if (!foundUser) {
-            return res.status(400).json({ msg: "Login POST - Incorrect Login" })
+            return res.status(400).json({ message: "Login POST - Incorrect Login" })
         } else if (!bcrypt.compareSync(req.body.password, foundUser.password)) {
-            return res.status(400).json({ msg: "Login POST - Incorrect Password" })
+            return res.status(400).json({ message: "Login POST - Incorrect Password" })
         } else {
             const token = jwt.sign(
                 {
@@ -196,7 +196,7 @@ router.post("/login", async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ msg: "Error - logging in" });
+        res.status(500).json({ message: "Error - logging in" });
     }
 })
 
