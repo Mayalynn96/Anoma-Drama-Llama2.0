@@ -1,63 +1,52 @@
-const Users = require("./users");
-const Posts = require("./posts");
-const Comments = require("./comments");
-const Mood = require("./mood");
-const Llama = require("./llama");
-const Reaction = require("./reaction");
+const User = require("./User");
+const Post = require("./Post");
+const Mood = require("./Mood");
+const Llama = require("./Llama");
+const Reaction = require("./Reaction");
 
-Users.hasMany(Posts, {
+User.hasMany(Post, {
   onDelete: "CASCADE",
   });
-Users.hasMany(Comments);
-Users.hasMany(Mood, {
-  onDelete: "CASCADE",
-}
-  );
-Posts.hasMany(Mood, {
-  onDelete: "CASCADE",
-});
-Posts.hasMany(Comments);
-Users.hasMany(Reaction);
-Comments.hasMany(Reaction);
 
-Posts.belongsTo(Users, {
+User.hasMany(Mood, {
   onDelete: "CASCADE",
 });
 
-Comments.belongsTo(Users, {
+Post.hasMany(Mood, {
   onDelete: "CASCADE",
 });
 
-Comments.belongsTo(Posts, {
+Post.belongsTo(User, {
   onDelete: "CASCADE",
 });
 
-Comments.belongsTo(Mood, {
+Mood.belongsTo(User, {
   onDelete: "CASCADE",
 });
 
-Mood.belongsTo(Users, {
+Mood.belongsTo(Post, {
   onDelete: "CASCADE",
 });
 
-Mood.belongsTo(Posts, {
+Reaction.belongsTo(User, {
   onDelete: "CASCADE",
 });
 
-Reaction.belongsTo(Users, {
+User.hasMany(Reaction)
+
+Reaction.belongsTo(Post, {
+  onDelete: "CASCADE",
+})
+
+Post.hasMany(Reaction)
+
+
+Llama.belongsTo(User, {
   onDelete: "CASCADE",
 });
 
-Reaction.belongsTo(Comments, {
+User.hasOne(Llama, {
   onDelete: "CASCADE",
 });
 
-Llama.belongsTo(Users, {
-  onDelete: "CASCADE",
-});
-
-Users.hasOne(Llama, {
-  onDelete: "CASCADE",
-});
-
-module.exports = { Users, Posts, Comments, Mood, Llama, Reaction };
+module.exports = { User, Post, Mood, Llama, Reaction };

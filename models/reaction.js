@@ -8,15 +8,10 @@ Reaction.init(
     reaction: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
+    }
   },
-
   {
-    sequelize,
-    timestamps: true,
-    freezeTableName: true,
-    underscored: true,
-    modelName: "reaction",
+    sequelize
   }
 );
 

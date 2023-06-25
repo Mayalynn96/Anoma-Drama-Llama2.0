@@ -1,87 +1,83 @@
 const router = require("express").Router();
 const { Users, Mood, Comments, Posts } = require("../models");
+const jwt = require("jsonwebtoken");
 
-router.get("/", (req, res) => {
-  Mood.findAll({
-    include: [Users, Posts]
-    })
-    .then((dbPostData) => res.json(dbPostData))
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
+// Get all moods DEV MODE
+router.get("/", async (req, res) => {
+  try {
+    const moodData = await Mood.findAll()
+    res.json(moodData)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error getting all moods!" })
+  };
 });
 
 // All moods by current user
-router.get("/user", (req, res) => {
-  Users.findByPk(req.session.userId, {
-    include: [Mood],
-  })
-    .then((dbPostData) => {
-      if (!dbPostData) {
-        res.status(404).json({ message: "No user found with this id" });
-        return;
-      }
-      res.json(dbPostData);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
+router.get("/user", async (req, res) => {
+  const token = req.headers?.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "you must be logged in to see all moods!" });
+  }
+  try {
+    const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+    const userMoodData = await Mood.findAll({ where: { UserId: tokenData.id } })
+    if (!userMoodData) {
+      res.status(404).json({ message: "No moods found for current user" });
+      return;
+    }
+    res.json(userMoodData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error getting all user moods!" })
+  };
 });
 
-router.get("/:id", (req, res) => {
-  Mood.findOne({
-    where: {
-      id: req.params.id,
-    },
-    attributes: { exclude: ["password"] },
-    include: [Users, Comments],
-  })
-    .then((dbPostData) => {
-      if (!dbPostData) {
-        res.status(404).json({ message: "No post found with this id" });
-        return;
-      }
-      res.json(dbPostData);
+// Post new mood
+router.post("/", async (req, res) => {
+  const token = req.headers?.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "You must be logged in to add mood!" });
+  }
+  try {
+    const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+    const newMood = await Mood.create({
+      mood: req.body.mood,
+      UserId: tokenData.id,
+      PostId: req.body.postId
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
+    res.json({ message: "Mood has been added" })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error adding mood!" })
+  };
 });
 
-
-router.post("/", (req, res) => {
-  Mood.create({
-    mood: req.body.mood,
-    userId: req.session.userId,
-    postId: req.body.postId
-  })
-    .then((dbPostData) => res.json(dbPostData))
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
-});
-
-router.delete("/:id", (req, res) => {
-  Mood.destroy({
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then((dbPostData) => {
-      if (!dbPostData) {
-        res.status(404).json({ message: "No post found with this id" });
-        return;
-      }
-      res.json(dbPostData);
+// Delete mood
+router.delete("/:id", async (req, res) => {
+  const token = req.headers?.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "You must be logged in to delete mood!" })
+  }
+  try {
+    const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+    const moodToDelete = await Mood.findByPk(req.params.id)
+    if(moodToDelete.UserId!=tokenData.id){
+      return res.status(403).json({ message: "You can only delete your own mood"})
+    }
+    const deletedMood = await Mood.destroy({
+      where: {
+        id: req.params.id,
+      },
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
+    if (!deletedMood) {
+      return res.status(404).json({ message: "No mood found with this id" });
+    }
+    return res.json({ message: "Mood has been deleted!"})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error deleting mood!" })
+  };
 });
 
 module.exports = router;
